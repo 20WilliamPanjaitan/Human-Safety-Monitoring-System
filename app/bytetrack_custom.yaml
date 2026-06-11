@@ -1,0 +1,10 @@
+# ByteTrack tuned untuk monitoring keselamatan (Tahap 4).
+# Beda dari default: track_buffer 30 -> 60 agar ID bertahan saat okulasi
+# parsial singkat (orang bersilangan), match_thresh dinaikkan sedikit.
+tracker_type: bytetrack
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.6
+track_buffer: 60        # tahan track lebih lama saat okulasi
+match_thresh: 0.85      # asosiasi lebih toleran -> kurangi ID switch
+fuse_score: True

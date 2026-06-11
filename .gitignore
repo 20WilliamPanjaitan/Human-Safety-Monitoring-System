@@ -22,6 +22,9 @@ construction-site-safety/
 weights/*.pt
 weights/*.onnx
 !weights/.gitkeep
+# Model pretrained base (diunduh ulang otomatis oleh ultralytics)
+/yolov8s.pt
+/yolov8n.pt
 
 # Output eval
 eval_report.json
