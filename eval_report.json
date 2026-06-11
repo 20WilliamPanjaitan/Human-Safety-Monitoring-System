@@ -1,0 +1,25 @@
+{
+  "mAP@0.5": 0.6227,
+  "mAP@0.5:0.95": 0.2914,
+  "precision": 0.6614,
+  "recall": 0.6171,
+  "per_class_AP@0.5": {
+    "Person": 0.6792,
+    "Hardhat": 0.8342,
+    "NO-Hardhat": 0.4188,
+    "Safety-Vest": 0.698,
+    "NO-Safety-Vest": 0.5521,
+    "Mask": 0.6942,
+    "NO-Mask": 0.4821
+  },
+  "per_class_AP@0.5:0.95": {
+    "Person": 0.2985,
+    "Hardhat": 0.4641,
+    "NO-Hardhat": 0.1508,
+    "Safety-Vest": 0.3698,
+    "NO-Safety-Vest": 0.2099,
+    "Mask": 0.3914,
+    "NO-Mask": 0.155
+  },
+  "seed": 42
+}
