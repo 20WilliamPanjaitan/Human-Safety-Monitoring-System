@@ -1,0 +1,13 @@
+ultralytics==8.3.0
+torch==2.3.1
+onnxruntime==1.18.0
+opencv-python-headless==4.10.0.84
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+numpy==1.26.4
+pydantic==2.7.4
+requests==2.32.3
+# opsional face recognition (skip kecuali ada sisa waktu):
+# insightface==0.7.3
+# onnx==1.16.1

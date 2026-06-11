@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+notebooks/
+samples/
+report/
+runs/
+datasets/
+*.mp4
+.git/
+.gitignore
+README.md
+ROADMAP-FASE2.md

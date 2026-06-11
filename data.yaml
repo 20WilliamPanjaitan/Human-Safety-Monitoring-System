@@ -1,0 +1,19 @@
+# data.yaml — Construction Site Safety, subset 7 kelas relevan
+# Dipakai oleh train.py dan eval.py.
+# Jalankan remap_labels.py dulu untuk memetakan 10 kelas asli -> 7 index di bawah.
+
+path: ./construction-site-safety
+train: train/images
+val:   valid/images
+test:  test/images
+
+names:
+  0: Person
+  1: Hardhat
+  2: NO-Hardhat
+  3: Safety-Vest
+  4: NO-Safety-Vest
+  5: Mask
+  6: NO-Mask
+  
+  

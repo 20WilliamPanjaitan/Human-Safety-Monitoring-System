@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Ultralytics / training artefak
+runs/
+*.cache
+
+# Dataset mentah (jangan commit — atribusi via README)
+datasets/
+construction-site-safety/
+
+# Media besar
+*.mp4
+*.avi
+*.mov
+
+# Bobot besar (commit best.pt/best.onnx secara eksplisit via: git add -f weights/best.pt)
+weights/*.pt
+weights/*.onnx
+!weights/.gitkeep
+
+# Output eval
+eval_report.json
+confusion_matrix.png
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
