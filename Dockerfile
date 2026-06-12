@@ -1,5 +1,5 @@
-# Image produksi untuk inference endpoint (FastAPI) — Tahap 6.5 deploy Render.
-# Catatan: Render free tier = CPU. Torch dipasang dari index CPU-only agar
+# Image produksi untuk inference endpoint (FastAPI) — Tahap 6.5 deploy Railway.
+# Catatan: build CPU-only. Torch dipasang dari index CPU-only agar
 # image tidak menarik paket CUDA (~2 GB) yang sia-sia di CPU.
 FROM python:3.11-slim
 
@@ -24,5 +24,5 @@ COPY weights/ ./weights/
 
 EXPOSE 8000
 
-# Render menyuntik $PORT; default 8000 untuk run lokal di container.
+# Railway menyuntik $PORT; default 8000 untuk run lokal di container.
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

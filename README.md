@@ -2,7 +2,7 @@
 
 Sistem monitoring keselamatan berbasis kamera: **person detection, tracking
 (ByteTrack), PPE detection (helmet/vest), dan people counting**. Satu model
-YOLOv8s multi-class → FastAPI + ONNX → deploy ke Render. Eval reproducible.
+YOLOv8s multi-class → FastAPI + ONNX → deploy ke Railway. Eval reproducible.
 
 ## Status modul
 - [x] T0 Scaffold repo & environment
@@ -12,7 +12,7 @@ YOLOv8s multi-class → FastAPI + ONNX → deploy ke Render. Eval reproducible.
 - [x] T4 Tracking ByteTrack
 - [x] T5 PPE logic + counting (`ppe_demo.py` 8/8)
 - [x] T6 FastAPI + ONNX (smoke PASS, p50 <120ms)
-- [~] T6.5 Deploy Render — config siap (`render.yaml`, `Dockerfile`, lihat `DEPLOY.md`); tinggal push & connect
+- [~] T6.5 Deploy Railway — config siap (`railway.json`, `Dockerfile`, lihat `DEPLOY.md`); tinggal push & connect
 - [x] T7 Visualisasi + edge case (`/annotate` label+conf, `edge_case_test.py`, `report/EDGE_CASES.md`)
 - [ ] T8 Technical Report + tag `submission-final`
 
@@ -66,7 +66,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ## Smoke test & benchmark
 ```bash
 python smoke_test.py                                # lokal (semua endpoint + error-case)
-python smoke_test.py https://YOUR_APP.onrender.com  # publik
+python smoke_test.py https://YOUR_APP.up.railway.app  # publik
 python benchmark.py --n 30                           # p50/p95 latency /detect & /ppe
 ```
 Latency lokal (CPU): **/detect p50 114 ms, /ppe p50 116 ms** (<500 ms target);
@@ -79,14 +79,15 @@ streamlit run streamlit_app.py   # http://localhost:8501
 Mode: PPE Compliance, Deteksi, Hitung orang, Robustness Test, Tracking video.
 Memakai modul `app/` langsung (tak butuh server API berjalan).
 
-## Deploy publik (Render) — Tahap 6.5
-Konfigurasi siap pakai: `Dockerfile`, `requirements-api.txt`, `render.yaml`.
-Langkah lengkap (push → Blueprint → verifikasi) ada di **`DEPLOY.md`**.
+## Deploy publik (Railway) — Tahap 6.5
+Konfigurasi siap pakai: `Dockerfile`, `requirements-api.txt`, `railway.json`.
+Langkah lengkap (push → Deploy from GitHub → verifikasi) ada di **`DEPLOY.md`**.
 ```bash
 # ringkas:
 git add -f weights/best.pt weights/best.onnx && git commit -am "deploy" && git push
-# lalu di dashboard Render: New > Blueprint > pilih repo (baca render.yaml)
-python smoke_test.py https://<APP>.onrender.com   # verifikasi publik
+# lalu di railway.app: New Project > Deploy from GitHub repo (baca Dockerfile + railway.json)
+# Settings > Networking > Generate Domain (target port 8000)
+python smoke_test.py https://<APP>.up.railway.app   # verifikasi publik
 ```
 
 ## Endpoint

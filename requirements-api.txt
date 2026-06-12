@@ -1,4 +1,4 @@
-# Dependensi runtime untuk inference endpoint (Dockerfile / Render).
+# Dependensi runtime untuk inference endpoint (Dockerfile / Railway).
 # torch + torchvision dipasang terpisah di Dockerfile dari index CPU-only.
 # Sengaja TANPA streamlit (UI dev) & requests (hanya dipakai smoke_test client).
 ultralytics==8.3.0
