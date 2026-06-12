@@ -20,9 +20,7 @@ from app.ppe_logic import ALL_PPE_CLASSES, assess_ppe, summarize
 from app.tracker import track_summary
 
 # Inference gambar pakai ONNX (ringan utk free-tier CPU); fallback ke .pt.
-WEIGHTS = os.getenv("WEIGHTS",
-                    "weights/best.onnx" if os.path.exists("weights/best.onnx")
-                    else "weights/best.pt")
+WEIGHTS = os.getenv("WEIGHTS", "weights/best.pt")
 # Tracking butuh model torch (.pt) untuk ByteTrack.
 TRACK_WEIGHTS = os.getenv("TRACK_WEIGHTS", "weights/best.pt")
 PERSON_IDX = 0  # index kelas Person di data.yaml (utk filter tracking)

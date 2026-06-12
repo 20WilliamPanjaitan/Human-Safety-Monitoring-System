@@ -17,7 +17,8 @@ RUN pip install torch==2.3.1 torchvision==0.18.1 \
 # 2) Sisa dependensi runtime API (tanpa streamlit/requests — bukan untuk server)
 COPY requirements-api.txt .
 RUN pip install -r requirements-api.txt
-
+RUN pip uninstall -y opencv-python opencv-contrib-python || true
+RUN pip install --no-cache-dir -r requirements-api.txt
 # 3) Kode + bobot (image-endpoint pakai best.onnx bila ada, tracking pakai best.pt)
 COPY app/ ./app/
 COPY weights/ ./weights/
