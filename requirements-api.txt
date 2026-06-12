@@ -6,9 +6,15 @@
 # cocok dgn numpy 1.26.4. (4.10.0.84 Linux di-build utk numpy 2.x -> cv2 gagal
 # import: "numpy._core.multiarray failed to import".)
 numpy==1.26.4
+
 ultralytics==8.3.0
+
+onnx==1.16.1
 onnxruntime==1.18.0
+ml_dtypes==0.5.4
+
 opencv-python-headless==4.9.0.80
+
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9
