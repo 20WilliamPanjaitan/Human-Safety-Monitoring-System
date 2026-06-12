@@ -8,7 +8,9 @@ from ultralytics import YOLO
 
 class Detector:
     def __init__(self, weights="weights/best.pt", conf=0.25, iou=0.45):
-        self.model = YOLO(weights)
+        # task="detect" eksplisit: model .onnx tak menyimpan metadata task,
+        # tanpa ini Ultralytics mencetak warning "Unable to guess model task".
+        self.model = YOLO(weights, task="detect")
         self.conf = conf
         self.iou = iou
 

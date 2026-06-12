@@ -58,6 +58,42 @@ def track_video(source, weights="weights/best.pt", classes=None):
             }
 
 
+def track_summary(source, weights="weights/best.pt", classes=None, max_frames=None,
+                  vid_stride=2, imgsz=480):
+    """Ringkasan tracking untuk API /track (JSON ringkas, bukan video).
+
+    Return {num_frames, unique_ids, count_persons, tracks:[{track_id,class,frames}]}.
+    `count_persons` = jumlah track_id unik = People Counting versi video (MH3).
+
+    vid_stride: proses tiap-N frame (2 = lewati separuh) -> hemat waktu agar klip
+        5-10 dtk selesai < 10 dtk di CPU. imgsz: resolusi inference lebih kecil
+        (480 vs 640) untuk speed. Keduanya trade-off kecepatan vs ketelitian.
+    """
+    model = _get_model(weights)
+    tracks = {}          # track_id -> {"class":..., "frames":n}
+    num_frames = 0
+
+    results = model.track(source=source, tracker=_TRACKER_CFG, persist=True,
+                          stream=True, verbose=False, classes=classes,
+                          vid_stride=vid_stride, imgsz=imgsz)
+    for r in results:
+        num_frames += 1
+        for b in r.boxes:
+            if b.id is None:
+                continue
+            tid = int(b.id[0])
+            t = tracks.setdefault(tid, {"class": model.names[int(b.cls[0])], "frames": 0})
+            t["frames"] += 1
+        if max_frames and num_frames >= max_frames:
+            break
+    return {
+        "num_frames": num_frames,
+        "unique_ids": len(tracks),
+        "count_persons": len(tracks),
+        "tracks": [{"track_id": k, **v} for k, v in sorted(tracks.items())],
+    }
+
+
 def render_tracked_video(source, out_path="samples/clip_tracked.mp4",
                          weights="weights/best.pt", classes=None):
     """Render video teranotasi: bbox berwarna per-ID + label track_id & kelas.

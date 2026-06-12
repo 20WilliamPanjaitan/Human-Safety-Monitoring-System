@@ -1,0 +1,16 @@
+Insight dari confusion matrix (penting buat Live Defense)
+
+  Diagonal (true positive rate): Hardhat 0.75, Person 0.65, Safety-Vest 0.62, Mask 0.61,
+  NO-Hardhat 0.56, NO-Safety-Vest 0.46, NO-Mask 0.39.
+
+  Argumen kunci yang kuat untuk juri: model hampir tidak pernah tertukar antara Hardhat ↔
+  NO-Hardhat (cuma 0.02 silang). Sumber error utama adalah miss → background (Person 0.35,
+  NO-Hardhat 0.44 lolos jadi background), bukan salah klasifikasi safety-critical. Artinya:
+  kalau model bilang "no-helmet", itu jarang false alarm — kesalahannya cenderung "kelewat
+  deteksi", bukan "salah lapor compliant padahal violation". Ini poin pertahanan yang bagus.
+
+  Kelemahan jujur (untuk bagian Limitasi di report): kelas negatif & objek kecil (NO-Mask 0.39)
+  recall-nya rendah karena instance-nya sedikit — ini yang paling diharapkan membaik dari
+  Colab 50-epoch.
+
+.

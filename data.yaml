@@ -2,7 +2,7 @@
 # Dipakai oleh train.py dan eval.py.
 # Jalankan remap_labels.py dulu untuk memetakan 10 kelas asli -> 7 index di bawah.
 
-path: ./construction-site-safety
+path: D:/INA AI/Human Safety Monitoring System/construction-site-safety
 train: train/images
 val:   valid/images
 test:  test/images

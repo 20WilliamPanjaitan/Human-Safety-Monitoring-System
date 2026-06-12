@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Human Safety Monitoring</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#1a2230; --panel2:#222c3d; --line:#2c3850;
+    --txt:#e6edf3; --muted:#8b9bb4; --accent:#ffb703; --accent2:#fb8500;
+    --ok:#22c55e; --warn:#eab308; --bad:#ef4444; --info:#38bdf8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 70% -10%,#1b2a3f,transparent),var(--bg);
+    color:var(--txt);min-height:100vh}
+  header{padding:22px 28px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:14px}
+  .logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:22px}
+  header h1{font-size:18px;margin:0;font-weight:700}
+  header p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+  .badge-live{margin-left:auto;font-size:12px;color:var(--muted);
+    display:flex;align-items:center;gap:7px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--bad)}
+  .dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  main{max-width:1180px;margin:0 auto;padding:26px;display:grid;
+    grid-template-columns:380px 1fr;gap:22px}
+  @media(max-width:880px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .card h2{margin:0 0 14px;font-size:14px;letter-spacing:.3px;text-transform:uppercase;
+    color:var(--muted)}
+  .drop{border:2px dashed var(--line);border-radius:14px;padding:30px 16px;text-align:center;
+    cursor:pointer;transition:.18s;background:var(--panel2)}
+  .drop:hover,.drop.drag{border-color:var(--accent);background:#26344a}
+  .drop .ico{font-size:34px}
+  .drop p{margin:9px 0 3px;font-size:14px}
+  .drop small{color:var(--muted)}
+  select,button{font:inherit}
+  .row{display:flex;gap:10px;margin-top:14px}
+  select{flex:1;background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:10px;padding:11px}
+  button.go{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1300;
+    border:none;border-radius:10px;padding:11px 20px;font-weight:700;cursor:pointer}
+  button.go:disabled{opacity:.5;cursor:not-allowed}
+  .thumb{margin-top:14px;border-radius:11px;overflow:hidden;border:1px solid var(--line);display:none}
+  .thumb img,.thumb video{width:100%;display:block}
+  .hint{color:var(--muted);font-size:12px;margin-top:12px;line-height:1.5}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:14px}
+  .stat .n{font-size:26px;font-weight:800}
+  .stat .l{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+  .stat.ok .n{color:var(--ok)} .stat.bad .n{color:var(--bad)} .stat.acc .n{color:var(--accent)}
+  .result-img{border-radius:13px;overflow:hidden;border:1px solid var(--line);
+    background:#0b0f15;min-height:240px;display:grid;place-items:center}
+  .result-img img{width:100%;display:block}
+  .placeholder{color:var(--muted);text-align:center;padding:50px 20px}
+  .placeholder .ico{font-size:46px;opacity:.5}
+  table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
+  .pill.ok{background:rgba(34,197,94,.16);color:#4ade80}
+  .pill.bad{background:rgba(239,68,68,.16);color:#f87171}
+  .pill.unk{background:rgba(139,155,180,.16);color:#aab6c9}
+  .pill.sev-low{background:rgba(234,179,8,.16);color:#facc15}
+  .pill.sev-high{background:rgba(239,68,68,.16);color:#f87171}
+  .pill.sev-none{background:rgba(34,197,94,.16);color:#4ade80}
+  .meta{color:var(--muted);font-size:12px;margin-top:14px;display:flex;gap:18px;flex-wrap:wrap}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid #1a1300;
+    border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .err{background:rgba(239,68,68,.12);border:1px solid var(--bad);color:#fca5a5;
+    padding:12px 14px;border-radius:11px;margin-top:14px;font-size:13px;display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">⛑️</div>
+  <div>
+    <h1>Human Safety Monitoring System</h1>
+    <p>YOLOv8s · ByteTrack · PPE Compliance — INaAI 2026</p>
+  </div>
+  <div class="badge-live"><span class="dot" id="dot"></span><span id="health">menghubungkan…</span></div>
+</header>
+
+<main>
+  <!-- INPUT -->
+  <section class="card">
+    <h2>Input</h2>
+    <label class="drop" id="drop" for="file">
+      <div class="ico">📤</div>
+      <p id="dropTxt">Klik atau seret file ke sini</p>
+      <small>Gambar (jpg/png) atau video (mp4)</small>
+    </label>
+    <input type="file" id="file" accept="image/*,video/*" hidden />
+
+    <div class="row">
+      <select id="mode">
+        <option value="ppe">🦺 PPE Compliance (gambar)</option>
+        <option value="detect">🎯 Deteksi person (gambar)</option>
+        <option value="count">🔢 Hitung orang (gambar)</option>
+        <option value="track">🎬 Tracking (video)</option>
+      </select>
+      <button class="go" id="run" disabled>Analisis</button>
+    </div>
+
+    <div class="thumb" id="thumb"></div>
+    <div class="err" id="err"></div>
+    <div class="hint">Tip: pakai <b>samples/worker.jpg</b> (ada pelanggaran),
+      <b>samples/crowd.jpg</b> (banyak orang), atau <b>samples/clip.mp4</b> (video).</div>
+  </section>
+
+  <!-- OUTPUT -->
+  <section class="card">
+    <h2>Hasil</h2>
+    <div id="output">
+      <div class="placeholder"><div class="ico">📊</div><p>Unggah file lalu klik <b>Analisis</b></p></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const fileInput=$("#file"), drop=$("#drop"), run=$("#run"), out=$("#output"),
+      err=$("#err"), thumb=$("#thumb"), mode=$("#mode");
+let current=null;
+
+// health badge
+fetch("/health").then(r=>r.json()).then(d=>{
+  $("#dot").classList.add("on");
+  $("#health").textContent = "online · " + (d.model||"model");
+}).catch(()=>{ $("#health").textContent="offline"; });
+
+// pick file
+function setFile(f){
+  current=f; run.disabled=!f; err.style.display="none";
+  $("#dropTxt").textContent=f?f.name:"Klik atau seret file ke sini";
+  thumb.innerHTML=""; thumb.style.display="none";
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  if(f.type.startsWith("video")){ thumb.innerHTML=`<video src="${url}" controls muted></video>`; mode.value="track"; }
+  else { thumb.innerHTML=`<img src="${url}">`; if(mode.value==="track") mode.value="ppe"; }
+  thumb.style.display="block";
+}
+fileInput.addEventListener("change",e=>setFile(e.target.files[0]));
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("drag");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("drag");}));
+drop.addEventListener("drop",e=>{ if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+
+function showErr(m){ err.textContent="⚠️ "+m; err.style.display="block"; }
+function loading(){ out.innerHTML=`<div class="placeholder"><span class="spin"></span><p>Memproses…</p></div>`; }
+const pill=(cls,txt)=>`<span class="pill ${cls}">${txt}</span>`;
+const statBox=(n,l,cls="")=>`<div class="stat ${cls}"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+
+async function analyze(){
+  if(!current) return;
+  err.style.display="none"; run.disabled=true; loading();
+  const fd=new FormData(); fd.append("file",current);
+  const m=mode.value;
+  try{
+    if(m==="ppe")        await runPPE(fd);
+    else if(m==="detect")await runDetect(fd);
+    else if(m==="count") await runCount(fd);
+    else                 await runTrack(fd);
+  }catch(e){ showErr(e.message); out.innerHTML=`<div class="placeholder"><div class="ico">❌</div><p>Gagal memproses</p></div>`; }
+  run.disabled=false;
+}
+run.addEventListener("click",analyze);
+
+async function post(ep,fd){
+  const r=await fetch(ep,{method:"POST",body:fd});
+  if(!r.ok){ let d={}; try{d=await r.json()}catch{}; throw new Error(d.detail||`HTTP ${r.status}`); }
+  return r;
+}
+
+async function runPPE(fd){
+  // annotated image + table (dua panggilan paralel)
+  const fd2=new FormData(); fd2.append("file",current);
+  const [annR,ppeR]=await Promise.all([post("/annotate",fd),post("/ppe",fd2)]);
+  const imgURL=URL.createObjectURL(await annR.blob());
+  const d=await ppeR.json();
+  const rows=d.persons.map((p,i)=>{
+    const stat=k=>{const v=p.status[k];return pill(v==="ok"?"ok":v==="violation"?"bad":"unk",v);};
+    const sev=pill("sev-"+p.severity,p.severity);
+    return `<tr><td>#${i+1}</td><td>${stat("helmet")}</td><td>${stat("vest")}</td>
+      <td>${stat("mask")}</td><td>${p.compliant?pill("ok","compliant"):pill("bad","violation")}</td><td>${sev}</td></tr>`;
+  }).join("");
+  out.innerHTML=`
+    <div class="stats">
+      ${statBox(d.num_persons,"Orang","acc")}
+      ${statBox(d.num_compliant,"Patuh","ok")}
+      ${statBox(d.num_violations,"Pelanggaran","bad")}
+      ${statBox(d.highest_severity,"Severity")}
+    </div>
+    <div class="result-img"><img src="${imgURL}"></div>
+    <table><thead><tr><th>#</th><th>Helmet</th><th>Vest</th><th>Mask</th><th>Status</th><th>Severity</th></tr></thead>
+      <tbody>${rows||`<tr><td colspan="6" style="color:var(--muted)">Tidak ada orang terdeteksi</td></tr>`}</tbody></table>
+    <div class="meta"><span>⏱ ${d.latency_ms} ms</span><span>🧠 ONNX Runtime</span></div>`;
+}
+
+async function runDetect(fd){
+  const annFd=new FormData(); annFd.append("file",current);
+  const [annR,detR]=await Promise.all([post("/annotate",annFd),post("/detect",fd)]);
+  const imgURL=URL.createObjectURL(await annR.blob());
+  const d=await detR.json();
+  const byCls={}; d.detections.forEach(x=>byCls[x.class]=(byCls[x.class]||0)+1);
+  const chips=Object.entries(byCls).map(([k,v])=>pill("unk",`${k}: ${v}`)).join(" ");
+  out.innerHTML=`
+    <div class="stats">${statBox(d.num_persons,"Person","acc")}${statBox(d.detections.length,"Total bbox")}</div>
+    <div class="result-img"><img src="${imgURL}"></div>
+    <div class="meta" style="margin-top:16px">${chips}</div>
+    <div class="meta"><span>⏱ ${d.latency_ms} ms</span></div>`;
+}
+
+async function runCount(fd){
+  const d=await (await post("/count",fd)).json();
+  out.innerHTML=`<div class="stats">${statBox(d.count,"Orang terdeteksi","acc")}</div>
+    <div class="meta"><span>⏱ ${d.latency_ms} ms</span></div>`;
+}
+
+async function runTrack(fd){
+  out.innerHTML=`<div class="placeholder"><span class="spin"></span><p>Memproses video… (bisa beberapa detik)</p></div>`;
+  const d=await (await post("/track",fd)).json();
+  const rows=d.tracks.map(t=>`<tr><td>ID ${t.track_id}</td><td>${t.class}</td><td>${t.frames} frame</td></tr>`).join("");
+  out.innerHTML=`
+    <div class="stats">
+      ${statBox(d.unique_ids,"Orang unik","acc")}
+      ${statBox(d.num_frames,"Frame diproses")}
+      ${statBox(d.count_persons,"People count","ok")}
+    </div>
+    <table><thead><tr><th>Track</th><th>Kelas</th><th>Kemunculan</th></tr></thead>
+      <tbody>${rows||`<tr><td colspan="3" style="color:var(--muted)">Tidak ada track</td></tr>`}</tbody></table>
+    <div class="meta"><span>⏱ ${(d.latency_ms/1000).toFixed(1)} s</span><span>🎯 ByteTrack</span></div>`;
+}
+</script>
+</body>
+</html>

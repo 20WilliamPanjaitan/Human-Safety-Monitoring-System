@@ -1,0 +1,15 @@
+# Tema gelap profesional — selaras dengan dashboard (aksen amber/orange).
+[theme]
+base = "dark"
+primaryColor = "#ffb703"
+backgroundColor = "#0f1419"
+secondaryBackgroundColor = "#1a2230"
+textColor = "#e6edf3"
+font = "sans serif"
+
+[server]
+maxUploadSize = 200
+headless = true
+
+[browser]
+gatherUsageStats = false
