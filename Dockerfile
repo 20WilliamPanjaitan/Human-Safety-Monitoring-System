@@ -14,8 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install torch==2.3.1 torchvision==0.18.1 \
     --index-url https://download.pytorch.org/whl/cpu
 
-# 2) Sisa dependensi runtime dashboard (streamlit + ultralytics + opencv)
+# 2) Sisa dependensi runtime dashboard (streamlit + ultralytics + opencv).
+#    ultralytics menarik opencv-python (reguler, ABI numpy 2.x) yang menimpa
+#    opencv-python-headless pinned -> "numpy._core.multiarray failed to import".
+#    Solusi: install, uninstall opencv non-headless, lalu reinstall (headless).
 COPY requirements-streamlit.txt .
+RUN pip install -r requirements-streamlit.txt
+RUN pip uninstall -y opencv-python opencv-contrib-python || true
 RUN pip install --no-cache-dir -r requirements-streamlit.txt
 
 # 3) Kode + konfigurasi + bobot
