@@ -1,11 +1,15 @@
 # Dependensi runtime untuk inference endpoint (Dockerfile / Railway).
 # torch + torchvision dipasang terpisah di Dockerfile dari index CPU-only.
 # Sengaja TANPA streamlit (UI dev) & requests (hanya dipakai smoke_test client).
+# numpy DIPIN <2 (torch 2.3.1 & torchvision 0.18.1 di-build utk numpy 1.x).
+# opencv 4.9.0.80 = rilis terakhir sebelum numpy 2.0 -> wheel-nya ABI numpy 1.x,
+# cocok dgn numpy 1.26.4. (4.10.0.84 Linux di-build utk numpy 2.x -> cv2 gagal
+# import: "numpy._core.multiarray failed to import".)
+numpy==1.26.4
 ultralytics==8.3.0
 onnxruntime==1.18.0
-opencv-python-headless==4.10.0.84
+opencv-python-headless==4.9.0.80
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9
-numpy==1.26.4
 pydantic==2.7.4
