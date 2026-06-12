@@ -1,0 +1,5 @@
+# Kunci numpy 1.x untuk SELURUH resolusi pip (build Docker/Railway).
+# torch & opencv-python-headless yang dipakai di-build untuk ABI numpy 1.x;
+# tanpa ini ada dep transitif (mis. ultralytics/onnx) yang diam-diam menarik
+# numpy 2.x -> "numpy._core.multiarray failed to import" saat import cv2.
+numpy==1.26.4

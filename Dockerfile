@@ -10,18 +10,26 @@ ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
-# 1) Torch + torchvision CPU-only (pinned, dipakai ultralytics & ByteTrack)
-RUN pip install torch==2.3.1 torchvision==0.18.1 \
+# constraints.txt mengunci numpy==1.26.4 di SEMUA langkah pip di bawah.
+COPY constraints.txt .
+
+# 1) Torch + torchvision CPU-only (pinned, dipakai ultralytics & ByteTrack).
+#    Pakai constraint agar torch tak menarik numpy 2.x.
+RUN pip install -c constraints.txt torch==2.3.1 torchvision==0.18.1 \
     --index-url https://download.pytorch.org/whl/cpu
 
 # 2) Sisa dependensi runtime dashboard (streamlit + ultralytics + opencv).
-#    ultralytics menarik opencv-python (reguler, ABI numpy 2.x) yang menimpa
-#    opencv-python-headless pinned -> "numpy._core.multiarray failed to import".
-#    Solusi: install, uninstall opencv non-headless, lalu reinstall (headless).
+#    ultralytics mendeklarasikan opencv-python (ABI numpy 2.x) yang bentrok di
+#    namespace `cv2` dengan headless pinned -> "numpy._core.multiarray failed".
 COPY requirements-streamlit.txt .
-RUN pip install -r requirements-streamlit.txt
-RUN pip uninstall -y opencv-python opencv-contrib-python || true
-RUN pip install --no-cache-dir -r requirements-streamlit.txt
+RUN pip install -c constraints.txt -r requirements-streamlit.txt
+# Buang opencv non-headless, lalu paksa-pasang HANYA headless tanpa menyentuh
+# numpy (--no-deps), supaya ABI cv2 cocok dengan numpy 1.26.4.
+RUN pip uninstall -y opencv-python opencv-contrib-python
+RUN pip install --no-cache-dir --force-reinstall --no-deps \
+    opencv-python-headless==4.9.0.80
+# Gagalkan build SEKARANG bila ABI numpy/opencv masih mismatch (versi tercetak).
+RUN python -c "import numpy, cv2; print('BUILD OK — numpy', numpy.__version__, '| cv2', cv2.__version__)"
 
 # 3) Kode + konfigurasi + bobot
 #    (image-endpoint pakai best.onnx bila ada, tracking pakai best.pt)
