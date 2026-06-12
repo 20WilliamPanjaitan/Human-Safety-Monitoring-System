@@ -10,9 +10,6 @@ construction-site-safety/
 *.mp4
 .git/
 .gitignore
-.streamlit/
-streamlit_app.py
-edge_case_test.py
 benchmark.py
 smoke_test.py
 ppe_demo.py

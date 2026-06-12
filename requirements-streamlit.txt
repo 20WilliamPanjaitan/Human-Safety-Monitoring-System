@@ -1,0 +1,16 @@
+# Dependensi runtime untuk dashboard Streamlit (Dockerfile / Railway).
+# torch + torchvision dipasang terpisah di Dockerfile dari index CPU-only.
+# numpy DIPIN <2 (torch 2.3.1 & torchvision 0.18.1 di-build utk numpy 1.x).
+# opencv 4.9.0.80 = wheel ABI numpy 1.x (cocok numpy 1.26.4); 4.10 Linux
+# di-build utk numpy 2.x -> "numpy._core.multiarray failed to import".
+numpy==1.26.4
+
+ultralytics==8.3.0
+
+onnx==1.16.1
+onnxruntime==1.18.0
+ml_dtypes==0.5.4
+
+opencv-python-headless==4.9.0.80
+
+streamlit==1.37.1
